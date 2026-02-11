@@ -2357,7 +2357,7 @@ export const formsPBS: Record<string, Record<string, string>> = {
     "Pokedex": "El hambre lo ha vuelto agresivo y ha convertido la electricidad de sus carrillos en energía de tipo Siniestro."
   },
   "ZACIAN,1": {
-    "FormName": "Forma Espada Suprema",
+    "FormName": "Crowned",
     "Types": "FAIRY,STEEL",
     "BaseStats": "92,150,115,148,80,115",
     "Abilities": "PROTEAN",
