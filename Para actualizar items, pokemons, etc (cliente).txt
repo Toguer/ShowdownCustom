@@ -1,0 +1,5 @@
+ir a la carpeta pokemon-showdown-client\play.pokemonshowdown.com\data
+Desde la consola (CMD) ejecutar: node .\patch-client-indexes.js
+
+
+Aclarar que no se si funciona desde un ordenador que no sea el mio xD
