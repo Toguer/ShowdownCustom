@@ -1,0 +1,14 @@
+Para ver los del jugador 1 es asi, para ver los del jugador 2 cambiar "p1" por "p2"
+
+/eval room.battle.getDebug('p1').then(d => d.actives.map(m => ({
+  name: m.name,
+  species: m.species,
+  item: m.item,
+  ability: m.ability,
+  atk: `${m.atkBase} -> ${m.atk}`,
+  def: `${m.defBase} -> ${m.def}`,
+  spa: `${m.spaBase} -> ${m.spa}`,
+  spd: `${m.spdBase} -> ${m.spd}`,
+  spe: `${m.speBase} -> ${m.spe}`,
+  boosts: m.boosts,
+})))

@@ -1,0 +1,103 @@
+meta:
+  purpose: "Contexto para continuar en otro chat"
+  date_local_timezone: "Europe/Madrid"
+  user_setup:
+    server_repo_path: "H:\\Games\\ShowdownServer\\pokemon-showdown"
+    client_repo_path: "H:\\Games\\ClienteShowdown\\pokemon-showdown-client"
+    server_start_command: "node pokemon-showdown"
+    friend_client_start_bat: |
+      @echo off
+      setlocal
+      cd /d "%~dp0"
+      start "PS Client Fallback" cmd /k node serve-client-fallback-plus-login.js
+      timeout /t 2 /nobreak >nul
+      start "" "http://localhost:8080/testclient.html?~~37.15.98.131:8000"
+      endlocal
+    public_server_ip_and_port: "37.15.98.131:8000"
+    local_client_port: 8080
+
+timeline_summary:
+  - topic: "Modificar habilidad de un Pokémon"
+    key_points:
+      - "Cambios de abilities en pokedex: editar la fuente correcta y asegurarse de compilar (dist/ manda en runtime)."
+      - "Se detectó que el engine estaba leyendo datos de dist; editar solo data/*.js a mano no siempre llega a dist."
+
+  - topic: "Errores TS en build"
+    key_points:
+      - "TS7006 en sim/dex.ts por map(x => ...) con implicit any."
+      - "Fix: tipar el parámetro: map((x: string) => ...)."
+
+  - topic: "Cambios no se reflejan en /data"
+    key_points:
+      - "Se vio discrepancia entre dist/data/pokedex-base.js (Parental Bond) y dist/data/pokedex.js (ShadowTag) en algunos puntos."
+      - "Se descubrió que datos PBS (pokemon-forms-pbs) estaban sobreescribiendo pokedex final."
+      - "generate-pbs.js genera data/pokemon-pbs.ts y data/pokemon-forms-pbs.ts desde data/pokemon.txt y data/pokemon_forms.txt."
+      - "Objetivo: oficiales por defecto + overrides custom."
+      - "Propuesta: añadir pokemon_custom.txt y pokemon_forms_custom.txt y hacer merge (mejor merge por campo, no por sección)."
+
+  - topic: "Item custom (Gengarite X) desaparece tras build"
+    key_points:
+      - "Diagnóstico: data/items.js tiene gengaritex pero dist/data/items.js no."
+      - "Conclusión: no editar data/items.js; editar data/items.ts y recompilar para que pase a dist/data/items.js."
+      - "Comando verificación:"
+      - "  node -e \"console.log(!!require('./dist/data/items.js').Items?.gengaritex)\""
+
+  - topic: "Build del cliente falla por git pull (local changes)"
+    key_points:
+      - "node build full en pokemon-showdown-client ejecuta git pull y aborta si hay cambios locales."
+      - "Soluciones: stash o commit en rama; o mejor no modificar el repo del cliente si solo se necesita que el server mande la verdad."
+      - "Problema real: assets (sprites) se cargan desde play.pokemonshowdown.com por defecto."
+
+  - topic: "Sprites oficiales + custom con fallback"
+    key_points:
+      - "Los sprites del cliente iban a https://play.pokemonshowdown.com/sprites/..."
+      - "Se montó un servidor local (localhost:8080) para servir testclient.html + assets."
+      - "Archivo clave: serve-client-fallback-plus-login.js (servidor local de cliente)."
+      - "Necesidad: que el cliente pida sprites a localhost:8080; si no existe local, fallback."
+      - "Problema adicional: amigos entrando directo a 37.15.98.131:8000 no ven custom porque el cliente apunta a play."
+      - "Decisión: mantener el cliente local para amigos (bat) y mejorar fallback."
+
+  - topic: "Plan adoptado: fallback en 3 niveles para assets"
+    key_points:
+      - "Objetivo: LOCAL (PC amigo) -> TU SERVIDOR (37.15.98.131:8000) -> OFICIAL (play.pokemonshowdown.com)."
+      - "Así amigos no necesitan tener todos los sprites custom; si faltan, el servidor local del cliente los pide a tu server."
+      - "Requisito: tu server debe exponer sprites custom por HTTP en ruta /sprites/... (misma estructura)."
+
+  - topic: "Generalizar habilidad Tera Shell (no solo Terapagos)"
+    key_points:
+      - "Encontrado hardcode en sim/pokemon.ts: condición restrictiva:"
+      - "  if (this.species.name === 'Terapagos-Terastal' && this.hasAbility('Tera Shell') ...)"
+      - "Cambio: quitar check de especie para que funcione para cualquier Pokémon con habilidad Tera Shell."
+      - "Recompilar con node build full pokemon-showdown."
+      - "Verificación: buscar 'Tera Shell' en dist/sim/pokemon.js y comprobar que ya no depende de Terapagos."
+      - "Si Select-String 'Terapagos-Terastal' no devuelve nada: significa que esa cadena no está en dist/sim/pokemon.js (posible éxito si antes estaba)."
+
+important_commands_used:
+  - "Get-ChildItem -Recurse -Include *.ts,*.js | Select-String \"texto\""
+  - "node -e \"console.log(require('./dist/data/pokedex-base.js').Pokedex.gengarmegax.abilities)\""
+  - "node -e \"console.log(!!require('./dist/data/items.js').Items?.gengaritex)\""
+  - "Get-ChildItem -Recurse -Include items.ts,items.js | Select FullName"
+  - "Select-String -Path .\\dist\\sim\\pokemon.js -Pattern \"Tera Shell\" -Context 0,6"
+
+current_state:
+  unresolved_or_next_steps:
+    - "Implementar fallback 3 niveles en serve-client-fallback-plus-login.js (assets: /sprites/... primero intenta local, luego http://37.15.98.131:8000, luego https://play.pokemonshowdown.com)."
+    - "Asegurar que testclient.html usa Dex.resourcePrefix = location.origin + '/' para que los sprites se pidan a localhost:8080."
+    - "Asegurar que tu servidor (37.15.98.131:8000) sirve tus sprites custom en /sprites/... (estructura tipo sprites/gen5/gengarmegax.png)."
+    - "Confirmar que el cambio de Tera Shell en sim/pokemon.ts está compilado a dist y funciona en batalla."
+
+files_mentioned:
+  server:
+    - "sim/pokemon.ts (Tera Shell hardcode)"
+    - "data/items.ts (fuente para items)"
+    - "data/items.js (no editar; artefacto)"
+    - "dist/data/items.js (lo que usa runtime)"
+    - "generate-pbs.js (genera pokemon-pbs.ts y pokemon-forms-pbs.ts desde pokemon.txt y pokemon_forms.txt)"
+    - "data/pokemon.txt, data/pokemon_forms.txt (PBS fuente)"
+    - "data/pokemon-pbs.ts, data/pokemon-forms-pbs.ts (generados)"
+  client:
+    - "serve-client-fallback-plus-login.js (servidor local 8080)"
+    - "testclient.html (debe apuntar sprites/data a location.origin)"
+
+notes:
+  - "Para continuar: pegar este YAML en un chat normal y pedir: 'Retoma desde aquí y ayúdame a implementar el fallback 3 niveles y ajustar testclient.html'."

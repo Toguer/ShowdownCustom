@@ -1,0 +1,240 @@
+Base species changed from pokemon.txt: 302
+Base species with TYPE change: 44
+Forms modified (existing): 34
+Forms added (new): 152
+
+Base type changes (id: old -> new):
+altaria: Dragon/Flying -> Flying/Dragon
+arbok: Poison -> Poison/Dark
+bayleef: Grass -> Grass/Fairy
+chikorita: Grass -> Grass/Fairy
+cyndaquil: Fire -> Fire/Normal
+delcatty: Normal -> Normal/Fairy
+drizzile: Water -> Water/Dark
+emboar: Fire/Fighting -> Fire/Dark
+farfetchd: Normal/Flying -> Flying/Normal
+feraligatr: Water -> Water/Dragon
+garbodor: Poison -> Poison/Steel
+glalie: Ice -> Ice/Dark
+golduck: Water -> Water/Psychic
+granbull: Fairy -> Fairy/Fighting
+heatmor: Fire -> Fire/Steel
+houndstone: Ghost -> Ghost/Ground
+illumise: Bug -> Bug/Fairy
+inteleon: Water -> Water/Dark
+jynx: Ice/Psychic -> Psychic/Ice
+lopunny: Normal -> Normal/Fighting
+luvdisc: Water -> Water/Fairy
+masquerain: Bug/Flying -> Bug/Water
+meganium: Grass -> Grass/Fairy
+misdreavus: Ghost -> Ghost/Fairy
+mismagius: Ghost -> Ghost/Fairy
+pignite: Fire/Fighting -> Fire/Dark
+quilava: Fire -> Fire/Normal
+runerigus: Ground/Ghost -> Ghost/Ground
+samurott: Water -> Water/Fighting
+sceptile: Grass -> Grass/Dragon
+serperior: Grass -> Grass/Psychic
+shaymin: Grass -> Grass/Flying
+sinistcha: Grass/Ghost -> Ghost/Grass
+skitty: Normal -> Normal/Fairy
+slitherwing: Bug/Fighting -> Bug/Dragon
+smoochum: Ice/Psychic -> Psychic/Ice
+stantler: Normal -> Normal/Psychic
+sunflora: Grass -> Grass/Fire
+typhlosion: Fire -> Fire/Normal
+ursaluna: Ground/Normal -> Normal/Ground
+vanillish: Ice -> Ice/Fairy
+vanillite: Ice -> Ice/Fairy
+vanilluxe: Ice -> Ice/Fairy
+volbeat: Bug -> Bug/Electric
+
+Forms modified (existing):
+alakazammega (Alakazam-Mega) Stats: changed
+altariamega (Altaria-Mega) Stats: changed
+articunogalar (Articuno-Galar) Stats: changed
+cameruptmega (Camerupt-Mega) Stats: changed
+chesnaughtmega (Chesnaught-Mega) Stats: changed
+decidueyehisui (Decidueye-Hisui) Stats: changed
+exeggutoralola (Exeggutor-Alola) Stats: changed
+falinksmega (Falinks-Mega) Types: Fighting -> Fighting/Steel
+floettemega (Floette-Mega) Stats: changed
+giratina (Giratina) Stats: changed
+glaliemega (Glalie-Mega) Stats: changed
+golemalola (Golem-Alola) Stats: changed
+kangaskhanmega (Kangaskhan-Mega) Stats: changed
+kyurem (Kyurem) Stats: changed
+kyurem (Kyurem) Stats: changed
+lucariomegaz (Lucario-Mega-Z) Types: Fighting/Steel -> Fighting/Psychic
+marowakalola (Marowak-Alola) Stats: changed
+mawilemega (Mawile-Mega) Stats: changed
+metagrossmega (Metagross-Mega) Stats: changed
+moltresgalar (Moltres-Galar) Stats: changed
+ninetalesalola (Ninetales-Alola) Stats: changed
+rapidashgalar (Rapidash-Galar) Stats: changed
+sableyemega (Sableye-Mega) Stats: changed
+samurotthisui (Samurott-Hisui) Stats: changed
+sceptilemega (Sceptile-Mega) Stats: changed
+scolipedemega (Scolipede-Mega) Stats: changed
+slowbrogalar (Slowbro-Galar) Stats: changed
+starmiemega (Starmie-Mega) Stats: changed
+taurospaldea (Tauros-Paldea) Types: Fighting -> Fighting/Fire
+taurospaldea (Tauros-Paldea) Types: Fighting/Fire -> Fighting/Water
+typhlosionhisui (Typhlosion-Hisui) Stats: changed
+weezinggalar (Weezing-Galar) Stats: changed
+zapdosgalar (Zapdos-Galar) Stats: changed
+zygardemega (Zygarde-Mega) Stats: changed
+
+Forms added (ids):
+aegislashformafilo
+alcremiemega
+appletunmega
+arceustipoacero
+arceustipoagua
+arceustipobicho
+arceustipodesconocido
+arceustipodragn
+arceustipoelctrico
+arceustipofantasma
+arceustipofuego
+arceustipohada
+arceustipohielo
+arceustipolucha
+arceustipoplanta
+arceustipopsquico
+arceustiporoca
+arceustiposiniestro
+arceustipotierra
+arceustipoveneno
+arceustipovolador
+basculegionformahembra
+blastoisemegax
+blastoisemegay
+butterfreemega
+calyrexformajineteespectral
+calyrexformajineteglacial
+castformformalluvia
+castformformanieve
+castformformasol
+centiskorchmega
+cinderacemega
+coalossalmega
+copperajahmega
+corviknightmega
+darmanitanformadaruma
+darmanitanformadarumadegalar
+deoxysformaataque
+deoxysformadefensa
+deoxysformavelocidad
+dialgaformaorigen
+drednawmega
+duraludonmega
+eeveeletsgo
+eeveemega
+eiscueformacaradeshielo
+enamorusformattem
+flapplemega
+floetteformafloreterna
+furfrouformacortearistocrtico
+furfrouformacortecaballero
+furfrouformacortecorazn
+furfrouformacortedama
+furfrouformacorteestrella
+furfrouformacortekabuki
+furfrouformacorterombo
+furfrouformacorteseorita
+furfrouformaformacortefaranico
+garbodormega
+gengarmegax
+gengarmegay
+gourgeisttamaoextragrande
+gourgeisttamaogrande
+gourgeisttamaonormal
+grimmsnarlmega
+groudonformaprimigenia
+hatterenemega
+hoopaformadesatada
+indeedeeformahembra
+inteleonmega
+kinglermega
+kyogreformaprimigenia
+kyuremformablanca
+kyuremformanegra
+landorusformattem
+laprasmega
+lycanrocformacrepuscular
+lycanrocformanocturna
+machampmega
+meloettaformadanza
+mewtwomega
+miniorformancleoail
+miniorformancleoamarillo
+miniorformancleoazul
+miniorformancleonaranja
+miniorformancleorojo
+miniorformancleoverde
+miniorformancleovioleta
+necrozmaformaalasdelalba
+necrozmaformamelenacrepuscular
+necrozmaformaultranecrozma
+ogerponmscaracimiento
+ogerponmscarafuente
+ogerponmscarahorno
+oinkologneformahembra
+orbeetlemega
+oricorioestiloanimado
+oricorioestiloplcido
+oricorioestilorefinado
+palafinformaheroica
+palkiaformaorigen
+pikachuformaamarillo
+pikachumega
+pumpkabootamaoextragrande
+pumpkabootamaogrande
+pumpkabootamaonormal
+rillaboommega
+rotomformacalor
+rotomformacorte
+rotomformafro
+rotomformalavado
+rotomformaventilador
+sandacondamega
+sandshrewformaalola
+sandslashformaalola
+shayminformacielo
+silvallytipoacero
+silvallytipoagua
+silvallytipobicho
+silvallytipodesconocido
+silvallytipodragn
+silvallytipoelctrico
+silvallytipofantasma
+silvallytipofuego
+silvallytipohada
+silvallytipohielo
+silvallytipolucha
+silvallytipoplanta
+silvallytipopsquico
+silvallytiporoca
+silvallytiposiniestro
+silvallytipotierra
+silvallytipoveneno
+silvallytipovolador
+snorlaxmega
+taurospaldea
+terapagosformaastral
+terapagosformateracristal
+thundurusformattem
+tornadusformattem
+toxtricitymega
+ursalunaformalunacarmes
+urshifuestilofluido
+venusaurmegax
+venusaurmegay
+wishiwashiformabanco
+wormadamformatroncoarena
+wormadamformatroncobasura
+zacianformaespadasuprema
+zamazentaformaescudosupremo
+zygardeforma10
+zygardeformacompleta

@@ -1,0 +1,8 @@
+Hay un archivo en data/pokemon_forms.txt y otro data/pokemon.txt
+
+Estos 2 archivos es donde estan los "overrides" de pokemons ya existentes o pokemons nuevos/sus nuevas formas.
+Despues de hacer las modificaciones hay que ejecutar los siguientes comandos desde la raiz (fuera de data)
+
+node .\generate-pbs.js
+node build full pokemon-showdown
+node pokemon-showdown 

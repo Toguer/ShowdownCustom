@@ -1,0 +1,4 @@
+Ir a /data/items.ts
+En este archivo se pueden crear y modificar asi a pelo. Para aplicar cambios hay que ejecutar:
+
+node build full pokemon-showdown
