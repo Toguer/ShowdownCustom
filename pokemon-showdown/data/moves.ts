@@ -22119,4 +22119,22 @@ export const Moves: import('../sim/dex-moves').MoveDataTable = {
 		type: "Fire",
 		contestType: "Beautiful",
 	},
+	deslizamiento: {
+		name: "Deslizamiento",
+		type: "Ice",
+		category: "Physical", // o "Special" si lo quieres especial
+		basePower: 70,
+		accuracy: 100,
+		pp: 20,
+		priority: 0,
+		target: "normal",
+		shortDesc: "Hace daño y sube la Velocidad del usuario en 1 nivel.",
+		desc: "Inflige daño y luego sube en 1 nivel la Velocidad del usuario.",
+		num: -2001,
+	
+		// Igual que "Flame Charge": boost al usuario tras golpear
+		self: {
+		  boosts: {spe: 1},
+		},
+	},
 };

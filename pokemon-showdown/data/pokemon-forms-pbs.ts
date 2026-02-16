@@ -338,8 +338,8 @@ export const formsPBS: Record<string, Record<string, string>> = {
     "MegaStone": "ALAKAZITE",
     "BaseStats": "55,50,65,150,175,95",
     "BaseExp": "300",
-    "Abilities": "TRACE",
-    "HiddenAbilities": "TRACE",
+    "Abilities": "ANGERSHELL",
+    "HiddenAbilities": "ANGERSHELL",
     "Height": "1.2",
     "Generation": "6"
   },
