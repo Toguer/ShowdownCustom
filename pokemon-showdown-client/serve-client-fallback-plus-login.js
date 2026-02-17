@@ -12,6 +12,17 @@ const {URL} = require('url');
 
 const PORT = 8080;
 
+// ─── RUTA AL DIST DEL SERVIDOR SHOWDOWN ───────────────────────────────────────
+const SHOWDOWN_DIST = path.join(__dirname, '..', 'pokemon-showdown', 'dist', 'data');
+// ──────────────────────────────────────────────────────────────────────────────
+
+// ─── SPRITES CUSTOM ───────────────────────────────────────────────────────────
+// Pon aquí tus sprites custom. Estructura: sprites-custom/gen5/snampery.png etc.
+// Esta carpeta tiene prioridad sobre play.pokemonshowdown.com para /sprites/...
+const CUSTOM_SPRITES_ROOT = path.join(__dirname, 'play.pokemonshowdown.com', 'sprites');
+
+// ──────────────────────────────────────────────────────────────────────────────
+
 const ROOTS = [
   __dirname,
   path.join(__dirname, 'play.pokemonshowdown.com'),
@@ -93,6 +104,82 @@ function shouldProxy(pathname) {
   );
 }
 
+// Descarga un sprite desde una URL HTTP/HTTPS, lo guarda en destPath y lo sirve.
+function fetchSaveAndServe(res, url, destPath, label) {
+  const isHttps = url.startsWith('https');
+  const lib = isHttps ? https : http;
+
+  lib.get(url, (remoteRes) => {
+    if (remoteRes.statusCode !== 200) {
+      remoteRes.resume();
+      // Señal de fallo para que el llamador intente el siguiente nivel
+      res.emit('sprite-not-found');
+      return;
+    }
+
+    // Asegurar que existe la carpeta destino
+    fs.mkdirSync(path.dirname(destPath), {recursive: true});
+
+    const ext = path.extname(destPath).toLowerCase();
+    const mime = MIME[ext] || 'application/octet-stream';
+
+    console.log('[' + label + ']', url, '-> guardado en', destPath);
+
+    res.writeHead(200, {
+      'Content-Type': mime,
+      'Cache-Control': 'no-cache',
+      'X-PS-Source': label.toLowerCase(),
+    });
+
+    // Guardar en disco y servir al mismo tiempo
+    const fileStream = fs.createWriteStream(destPath);
+    remoteRes.pipe(fileStream);
+    remoteRes.pipe(res);
+
+    fileStream.on('error', () => {}); // silenciar errores de escritura
+  }).on('error', () => {
+    res.emit('sprite-not-found');
+  });
+}
+
+// Fallback de 3 niveles para sprites:
+// 1) sprites-custom/ local
+// 2) tu servidor (37.15.98.131:8001) → si lo encuentra, lo guarda en sprites-custom/
+// 3) play.pokemonshowdown.com (oficial, no se guarda)
+function handleSprite(req, res, pathname) {
+  // Ruta local donde se guardaría/buscaría el sprite custom
+  const relativePath = pathname.replace(/^\/sprites/, '');
+  const localPath = safeJoin(CUSTOM_SPRITES_ROOT, relativePath);
+
+  // 1) ¿Existe ya en local?
+  if (localPath) {
+    try {
+      const st = fs.statSync(localPath);
+      if (st.isFile()) {
+        console.log('[SPRITE LOCAL]', pathname, '->', localPath);
+        serveFile(req, res, localPath, pathname);
+        return;
+      }
+    } catch {}
+  }
+
+  // 2) Intentar desde tu servidor custom
+  const customServerUrl = `http://62.14.79.8:8001${relativePath}`;
+
+  // Usamos un EventEmitter para encadenar los niveles
+  res.once('sprite-not-found', () => {
+    // 3) Fallback final a play.pokemonshowdown.com (sin guardar)
+    console.log('[SPRITE OFICIAL]', pathname, '-> play.pokemonshowdown.com');
+    proxyToFallback(req, res, new URL('http://localhost' + pathname));
+  });
+
+  if (localPath) {
+    fetchSaveAndServe(res, customServerUrl, localPath, 'SPRITE CUSTOM SERVER');
+  } else {
+    res.emit('sprite-not-found');
+  }
+}
+
 function proxyToFallback(req, res, urlObj) {
   const target = new URL(FALLBACK_ORIGIN + urlObj.pathname + (urlObj.search || ''));
 
@@ -130,17 +217,61 @@ function proxyToFallback(req, res, urlObj) {
   req.pipe(proxyReq);
 }
 
+// ─── ENDPOINT /api/pokedex ─────────────────────────────────────────────────────
+// Lee dist/data/pokedex.js del servidor Showdown y devuelve el objeto Pokedex
+// como JSON. El cliente lo fetchea al arrancar y mergea con su BattlePokédex local.
+function serveApiPokedex(req, res) {
+  const pokedexPath = path.join(SHOWDOWN_DIST, 'pokedex.js');
+
+  try {
+    // Limpiamos caché de require para siempre leer la versión más reciente
+    delete require.cache[require.resolve(pokedexPath)];
+    const mod = require(pokedexPath);
+
+    // El módulo exporta { Pokedex: {...} }
+    const pokedex = mod.Pokedex || mod.exports?.Pokedex || mod;
+
+    const json = JSON.stringify(pokedex);
+    console.log('[API]', '/api/pokedex', '-> OK,', Object.keys(pokedex).length, 'entradas');
+
+    res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end(json);
+  } catch (e) {
+    console.error('[API] /api/pokedex ERROR:', e.message);
+    console.error('      Buscando en:', pokedexPath);
+    console.error('      Ajusta SHOWDOWN_DIST al inicio del archivo si la ruta es incorrecta.');
+    res.writeHead(500, {'Content-Type': 'text/plain; charset=utf-8'});
+    res.end('500 Error leyendo pokedex del servidor: ' + e.message);
+  }
+}
+// ──────────────────────────────────────────────────────────────────────────────
+
 http.createServer((req, res) => {
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
   let pathname = urlObj.pathname;
 
   if (pathname === '/') pathname = '/index.html';
 
+  // ── API endpoints ──────────────────────────────────────────────────────────
+  if (pathname === '/api/pokedex') {
+    return serveApiPokedex(req, res);
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
   // 1) intenta servir local
   const servedPath = tryServeFromRoots(req, res, pathname);
   if (servedPath) return;
 
-  // 2) fallback solo para rutas permitidas
+  // 2) sprites: busca en sprites-custom/ antes de hacer fallback a play
+  if (pathname.startsWith('/sprites/')) {
+    return handleSprite(req, res, pathname);
+  }
+
+  // 3) fallback solo para rutas permitidas
   if (shouldProxy(pathname)) {
     return proxyToFallback(req, res, urlObj);
   }
@@ -151,4 +282,5 @@ http.createServer((req, res) => {
   res.end('404 Not Found');
 }).listen(PORT, () => {
   console.log(`Client+fallback: http://localhost:${PORT}/testclient.html?~~localhost:8000`);
+  console.log(`API Pokédex:     http://localhost:${PORT}/api/pokedex`);
 });

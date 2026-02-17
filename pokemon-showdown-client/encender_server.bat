@@ -11,6 +11,6 @@ REM Esperar un poco a que el server levante (ajusta si quieres)
 timeout /t 2 /nobreak >nul
 
 REM Abrir el navegador en el cliente local, conectando al servidor remoto
-start "" "http://localhost:8080/testclient.html?~~37.15.98.131:8000"
+start "" "http://localhost:8080/testclient.html?~~62.14.79.8:8000"
 
 endlocal

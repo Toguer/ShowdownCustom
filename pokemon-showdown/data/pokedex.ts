@@ -26,18 +26,61 @@ export const Pokedex: SpeciesTable = (() => {
 	for (const header of Object.keys(basePBS)) {
 		const baseKey = header.split(",")[0].trim(); // [BULBASAUR] etc
 		const id = toID(baseKey);
-		if (!dex[id]) continue;
-
 		const data = basePBS[header];
+
+		// SI NO EXISTE EN EL POKEDEX BASE, CRÉALO (Pokémon completamente nuevo)
+		if (!dex[id]) {
+			const name = data.Name || (baseKey.charAt(0).toUpperCase() + baseKey.slice(1).toLowerCase());
+			dex[id] = {
+				num: 2000, // Número temporal para customs
+				name: name,
+				types: ["Normal"], // Tipo por defecto, se sobreescribirá abajo
+				baseStats: {hp: 50, atk: 50, def: 50, spa: 50, spd: 50, spe: 50}, // Stats por defecto
+				abilities: {0: "No Ability"}, // Habilidad por defecto
+			};
+		}
+
+		// Aplica parches de Types y BaseStats (tanto para nuevos como existentes)
+		// Maneja tanto "Types" (formato pokemon_forms.txt) como "Type1/Type2" (formato pokemon.txt)
 		if (data.Types) {
-			const ts = data.Types.split(",").map(s => s.trim()).filter(Boolean).map(typeName);
+			const types = data.Types.split(",").map(s => s.trim()).filter(Boolean);
+			const ts = types.map(typeName);
 			if (ts.length) dex[id] = {...dex[id], types: ts};
+		} else if (data.Type1 || data.Type2) {
+			const types: string[] = [];
+			if (data.Type1) types.push(typeName(data.Type1));
+			if (data.Type2) types.push(typeName(data.Type2));
+			if (types.length) dex[id] = {...dex[id], types: types};
 		}
 		if (data.BaseStats) {
 			const n = data.BaseStats.split(",").map(x => parseInt(x.trim(), 10));
 			if (n.length >= 6 && n.every(x => Number.isFinite(x))) {
 				const [hp, atk, def, spe, spa, spd] = n;
 				dex[id] = {...dex[id], baseStats: {hp, atk, def, spa, spd, spe}};
+			}
+		}
+		// Aplica Abilities si existen en el PBS base
+		if (data.Abilities || data.HiddenAbility) {
+			const abilitiesObj: any = {};
+			
+			// Procesar habilidades normales
+			if (data.Abilities) {
+				const abilities = data.Abilities.split(",").map(s => s.trim()).filter(Boolean);
+				abilities.forEach((ability, index) => {
+					const abilityName = ability.charAt(0).toUpperCase() + ability.slice(1).toLowerCase();
+					abilitiesObj[index.toString()] = abilityName;
+				});
+			}
+			
+			// Procesar habilidad oculta (Hidden Ability = slot "H")
+			if (data.HiddenAbility) {
+				const hiddenAbility = data.HiddenAbility.trim();
+				const abilityName = hiddenAbility.charAt(0).toUpperCase() + hiddenAbility.slice(1).toLowerCase();
+				abilitiesObj["H"] = abilityName;
+			}
+			
+			if (Object.keys(abilitiesObj).length > 0) {
+				dex[id] = {...dex[id], abilities: abilitiesObj};
 			}
 		}
 	}
@@ -84,10 +127,13 @@ export const Pokedex: SpeciesTable = (() => {
 		}
 		if (data.Abilities) {
 			const a = data.Abilities.split(",").map(s => s.trim()).filter(Boolean);
-			if (a.length) patch.abilities = {0: a[0].toUpperCase()};
+			if (a.length) {
+				const abilityName = a[0].charAt(0).toUpperCase() + a[0].slice(1).toLowerCase();
+				patch.abilities = {0: abilityName};
+			}
 		}
 		if (data.MegaStone) {
-			// requiredItem usa el token tal cual “Title Case” (coincide con items.txt)
+			// requiredItem usa el token tal cual "Title Case" (coincide con items.txt)
 			const tok = data.MegaStone.trim();
 			const pretty = tok.endsWith("X") ? tok.slice(0, -1).toLowerCase().replace(/^./, c => c.toUpperCase()) + " X"
 				: tok.endsWith("Y") ? tok.slice(0, -1).toLowerCase().replace(/^./, c => c.toUpperCase()) + " Y"
