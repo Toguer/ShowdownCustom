@@ -3298,8 +3298,8 @@ FormName = Mega Inteleon
 MegaStone = INTELEONITE
 BaseStats = 70,95,75,140,175,75
 BaseExp = 300
-Abilities = SNIPER
-HiddenAbilities = SNIPER
+Abilities = PODERSABIO
+HiddenAbilities = PODERSABIO
 Generation = 9
 #-------------------------------
 [SNORLAX,1]
