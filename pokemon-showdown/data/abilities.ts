@@ -1328,6 +1328,7 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 			this.singleEvent('WeatherChange', this.effect, this.effectState, pokemon);
 		},
 		onWeatherChange(pokemon) {
+			// Solo Cherrim se transforma
 			if (!pokemon.isActive || pokemon.baseSpecies.baseSpecies !== 'Cherrim' || pokemon.transformed) return;
 			if (!pokemon.hp) return;
 			if (['sunnyday', 'desolateland'].includes(pokemon.effectiveWeather())) {
@@ -1340,21 +1341,41 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 				}
 			}
 		},
+		// Boost para ALIADOS
 		onAllyModifyAtkPriority: 3,
 		onAllyModifyAtk(atk, pokemon) {
-			if (this.effectState.target.baseSpecies.baseSpecies !== 'Cherrim') return;
+			console.log('[FLOWER GIFT] Checking Atk boost:', pokemon.name, 'weather:', pokemon.effectiveWeather());
 			if (['sunnyday', 'desolateland'].includes(pokemon.effectiveWeather())) {
+				console.log('[FLOWER GIFT] Boosting Atk for', pokemon.name);
 				return this.chainModify(1.5);
 			}
 		},
 		onAllyModifySpDPriority: 4,
 		onAllyModifySpD(spd, pokemon) {
-			if (this.effectState.target.baseSpecies.baseSpecies !== 'Cherrim') return;
+			console.log('[FLOWER GIFT] Checking SpD boost:', pokemon.name, 'weather:', pokemon.effectiveWeather());
 			if (['sunnyday', 'desolateland'].includes(pokemon.effectiveWeather())) {
+				console.log('[FLOWER GIFT] Boosting SpD for', pokemon.name);
 				return this.chainModify(1.5);
 			}
 		},
-		flags: { failroleplay: 1, noreceiver: 1, noentrain: 1, notrace: 1, breakable: 1 },
+		// Boost para SÍ MISMO
+		onModifyAtkPriority: 3,
+		onModifyAtk(atk, pokemon) {
+			console.log('[FLOWER GIFT SELF] Checking Atk boost:', pokemon.name, 'weather:', pokemon.effectiveWeather());
+			if (['sunnyday', 'desolateland'].includes(pokemon.effectiveWeather())) {
+				console.log('[FLOWER GIFT SELF] Boosting Atk for', pokemon.name);
+				return this.chainModify(1.5);
+			}
+		},
+		onModifySpDPriority: 4,
+		onModifySpD(spd, pokemon) {
+			console.log('[FLOWER GIFT SELF] Checking SpD boost:', pokemon.name, 'weather:', pokemon.effectiveWeather());
+			if (['sunnyday', 'desolateland'].includes(pokemon.effectiveWeather())) {
+				console.log('[FLOWER GIFT SELF] Boosting SpD for', pokemon.name);
+				return this.chainModify(1.5);
+			}
+		},
+		flags: { breakable: 1 },
 		name: "Flower Gift",
 		rating: 1,
 		num: 122,

@@ -215,9 +215,36 @@
 					}
 
 					console.log('[CustomDex] Índice de búsqueda actualizado.');
+
+					// Cargar movimientos custom del servidor
+					return fetch('/api/moves');
+				})
+				.then(r => r ? (r.ok ? r.json() : Promise.reject('HTTP ' + r.status)) : null)
+				.then(serverMoves => {
+					if (!serverMoves) return;
+					const moves = window.BattleMoves;
+					if (!moves) return;
+					let added = 0, updated = 0;
+					for (const key of Object.keys(serverMoves)) {
+						if (!moves[key]) {
+							moves[key] = serverMoves[key];
+							added++;
+						} else {
+							const c = moves[key], s = serverMoves[key];
+							let changed = false;
+							for (const field of Object.keys(s)) {
+								if (JSON.stringify(c[field]) !== JSON.stringify(s[field])) {
+									c[field] = s[field];
+									changed = true;
+								}
+							}
+							if (changed) updated++;
+						}
+					}
+					console.log('[CustomMoves] Patch aplicado:', added, 'nuevos,', updated, 'actualizados.');
 				})
 				.catch(err => {
-					console.warn('[CustomDex] API no disponible, arrancando sin custom:', err);
+					console.warn('[CustomMoves] API no disponible:', err);
 				})
 				.finally(() => {
 					window.app = new App();

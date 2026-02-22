@@ -19,8 +19,7 @@ const SHOWDOWN_DIST = path.join(__dirname, '..', 'pokemon-showdown', 'dist', 'da
 // ─── SPRITES CUSTOM ───────────────────────────────────────────────────────────
 // Pon aquí tus sprites custom. Estructura: sprites-custom/gen5/snampery.png etc.
 // Esta carpeta tiene prioridad sobre play.pokemonshowdown.com para /sprites/...
-const CUSTOM_SPRITES_ROOT = path.join(__dirname, 'play.pokemonshowdown.com', 'sprites');
-
+const CUSTOM_SPRITES_ROOT = path.join(__dirname, 'sprites-custom');
 // ──────────────────────────────────────────────────────────────────────────────
 
 const ROOTS = [
@@ -148,7 +147,7 @@ function fetchSaveAndServe(res, url, destPath, label) {
 // 3) play.pokemonshowdown.com (oficial, no se guarda)
 function handleSprite(req, res, pathname) {
   // Ruta local donde se guardaría/buscaría el sprite custom
-  const relativePath = pathname.replace(/^\/sprites/, '');
+  const relativePath = pathname.replace(/^\/sprites\//, '/');
   const localPath = safeJoin(CUSTOM_SPRITES_ROOT, relativePath);
 
   // 1) ¿Existe ya en local?
@@ -164,7 +163,7 @@ function handleSprite(req, res, pathname) {
   }
 
   // 2) Intentar desde tu servidor custom
-  const customServerUrl = `http://62.14.79.8:8001${relativePath}`;
+  const customServerUrl = `http://37.15.98.131:8001${relativePath}`;
 
   // Usamos un EventEmitter para encadenar los niveles
   res.once('sprite-not-found', () => {
@@ -248,6 +247,34 @@ function serveApiPokedex(req, res) {
     res.end('500 Error leyendo pokedex del servidor: ' + e.message);
   }
 }
+
+// ─── ENDPOINT /api/moves ───────────────────────────────────────────────────────
+// Lee dist/data/moves.js del servidor Showdown y devuelve el objeto Moves
+// como JSON. El cliente lo fetchea al arrancar y mergea con su BattleMoves local.
+function serveApiMoves(req, res) {
+  const movesPath = path.join(SHOWDOWN_DIST, 'moves.js');
+
+  try {
+    delete require.cache[require.resolve(movesPath)];
+    const mod = require(movesPath);
+    const moves = mod.Moves || mod.exports?.Moves || mod;
+
+    const json = JSON.stringify(moves);
+    console.log('[API]', '/api/moves', '-> OK,', Object.keys(moves).length, 'entradas');
+
+    res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end(json);
+  } catch (e) {
+    console.error('[API] /api/moves ERROR:', e.message);
+    console.error('      Buscando en:', movesPath);
+    res.writeHead(500, {'Content-Type': 'text/plain; charset=utf-8'});
+    res.end('500 Error leyendo moves del servidor: ' + e.message);
+  }
+}
 // ──────────────────────────────────────────────────────────────────────────────
 
 http.createServer((req, res) => {
@@ -259,6 +286,9 @@ http.createServer((req, res) => {
   // ── API endpoints ──────────────────────────────────────────────────────────
   if (pathname === '/api/pokedex') {
     return serveApiPokedex(req, res);
+  }
+  if (pathname === '/api/moves') {
+    return serveApiMoves(req, res);
   }
   // ──────────────────────────────────────────────────────────────────────────
 
@@ -283,4 +313,5 @@ http.createServer((req, res) => {
 }).listen(PORT, () => {
   console.log(`Client+fallback: http://localhost:${PORT}/testclient.html?~~localhost:8000`);
   console.log(`API Pokédex:     http://localhost:${PORT}/api/pokedex`);
+  console.log(`API Moves:       http://localhost:${PORT}/api/moves`);
 });

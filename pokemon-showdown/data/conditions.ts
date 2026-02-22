@@ -89,34 +89,32 @@ export const Conditions: import('../sim/dex-conditions').ConditionDataTable = {
 			} else {
 				this.add('-status', target, 'frz');
 			}
+			// Shaymin-Sky vuelve a forma normal
 			if (target.species.name === 'Shaymin-Sky' && target.baseSpecies.baseSpecies === 'Shaymin') {
 				target.formeChange('Shaymin', this.effect, true);
 			}
 		},
-		onBeforeMovePriority: 10,
-		onBeforeMove(pokemon, target, move) {
-			if (move.flags['defrost'] && !(move.id === 'burnup' && !pokemon.hasType('Fire'))) return;
-			if (this.randomChance(1, 5)) {
-				pokemon.cureStatus();
-				return;
-			}
-			this.add('cant', pokemon, 'frz');
-			return false;
+		// Frostbite: daño residual 1/16 HP
+		onResidualOrder: 10,
+		onResidual(pokemon) {
+			this.damage(pokemon.baseMaxhp / 16);
 		},
-		onModifyMove(move, pokemon) {
+		// Frostbite: reduce ataque especial a la mitad
+		onModifySpAPriority: 5,
+		onModifySpA(spa, pokemon) {
+			return this.chainModify(0.5);
+		},
+		// Se cura al recibir un ataque de fuego
+		onDamagingHit(damage, target, source, move) {
+			if (move.type === 'Fire' && move.category !== 'Status') {
+				target.cureStatus();
+			}
+		},
+		// Movimientos con flag 'defrost' curan frostbite (e.g., Flame Wheel, Scald)
+		onBeforeMove(pokemon, target, move) {
 			if (move.flags['defrost']) {
 				this.add('-curestatus', pokemon, 'frz', `[from] move: ${move}`);
-				pokemon.clearStatus();
-			}
-		},
-		onAfterMoveSecondary(target, source, move) {
-			if (move.thawsTarget) {
-				target.cureStatus();
-			}
-		},
-		onDamagingHit(damage, target, source, move) {
-			if (move.type === 'Fire' && move.category !== 'Status' && move.id !== 'polarflare') {
-				target.cureStatus();
+				pokemon.cureStatus();
 			}
 		},
 	},

@@ -1100,8 +1100,8 @@ export const formsPBS: Record<string, Record<string, string>> = {
     "MegaStone": "SALAMENCITE",
     "BaseStats": "95,145,130,120,120,90",
     "BaseExp": "350",
-    "Abilities": "AERILATE",
-    "HiddenAbilities": "AERILATE",
+    "Abilities": "POISONPOINT",
+    "HiddenAbilities": "POISONPOINT",
     "Height": "1.8",
     "Weight": "112.6",
     "Generation": "6"
@@ -3170,8 +3170,8 @@ export const formsPBS: Record<string, Record<string, string>> = {
     "MegaStone": "INTELEONITE",
     "BaseStats": "70,95,75,140,175,75",
     "BaseExp": "300",
-    "Abilities": "SNIPER",
-    "HiddenAbilities": "SNIPER",
+    "Abilities": "PODERSABIO",
+    "HiddenAbilities": "PODERSABIO",
     "Generation": "9"
   },
   "SNORLAX,1": {
