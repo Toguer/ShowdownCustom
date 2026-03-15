@@ -43106,7 +43106,10 @@ exports.BattlePokedex = {
         baseSpecies: "Snorlax",
         forme: "Mega",
         requiredItem: "Snorlaxite"
-    }
+    },
+
+
+
 };
 
 exports.Pokedex = exports.BattlePokedex;

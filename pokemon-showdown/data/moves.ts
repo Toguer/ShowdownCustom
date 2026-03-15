@@ -22026,6 +22026,8 @@ export const Moves: import('../sim/dex-moves').MoveDataTable = {
 		contestType: "Cool",
 	},
 	zippyzap: {
+		shortDesc: "El usuario ataca con prioridad y siempre es golpe critico",
+		desc: "El usuario ataca con ráfagas eléctricas, siempre va en primer lugar y es golpe crítico",
 		num: 729,
 		accuracy: 100,
 		basePower: 50,

@@ -5698,4 +5698,30 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		rating: 4,
 		num: 20001,
 	},
+	espanto: {
+		num: -2,  // Número negativo para habilidades custom
+		name: "Espanto",
+		shortDesc: "Al entrar en combate, baja el Sp. Atk de todos los rivales.",
+		desc: "Cuando este Pokémon entra en combate, baja el Sp. Atk de todos los rivales en 1 nivel.",
+		rating: 3.5,
+		flags: { breakable: 1 },
+		onStart(pokemon) {
+			let activated = false;
+			for (const target of pokemon.foes()) {
+				if (target.volatiles['substitute']) {
+					if (!activated) {
+						activated = true;
+						this.add('-ability', pokemon, 'Espanto', '[from] ability: Espanto');
+					}
+					this.add('-block', target, 'move: Substitute');
+					continue;
+				}
+				if (!activated) {
+					activated = true;
+					this.add('-ability', pokemon, 'Espanto', '[from] ability: Espanto');
+				}
+				this.boost({ spa: -1 }, target, pokemon, null, true);
+			}
+		},
+	},
 };

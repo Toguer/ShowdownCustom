@@ -585,7 +585,21 @@ export const commands: Chat.ChatCommands = {
 		const gen = parseInt(cmd.substr(-1));
 		if (gen) target += `, gen${gen}`;
 
-		const { dex, format, targets } = this.splitFormat(target, true, true);
+		let { dex, format, targets } = this.splitFormat(target, true, true);
+		// Si el formato tiene un mod, usa ese dex
+		if (format?.mod && !target.toLowerCase().includes('gen')) {
+    		dex = Dex.mod(format.mod);
+		}
+		if (!format?.mod && targets.length > 0) {
+			const possibleMod = targets[targets.length - 1].toLowerCase();
+			try {
+				const modDex = Dex.mod(possibleMod);
+				dex = modDex;
+				targets.pop();
+			} catch (e) {
+				// No es un mod válido
+			}
+		}
 
 		const prefix = `|c|${user.getIdentity(room)}|/raw `;
 		let buffer = '';

@@ -22,6 +22,47 @@ const SHOWDOWN_DIST = path.join(__dirname, '..', 'pokemon-showdown', 'dist', 'da
 const CUSTOM_SPRITES_ROOT = path.join(__dirname, 'sprites-custom');
 // ──────────────────────────────────────────────────────────────────────────────
 
+// ─── DATA OVERRIDE: servir data/*.js desde dist/ del servidor ─────────────────
+// Los archivos dist/*.js usan module.exports (Node.js) pero el navegador necesita
+// variables globales (window.BattlePokedex, etc.).
+// Este servidor hace la conversión al vuelo: lee el módulo con require() y lo
+// serializa como asignación a la variable global que espera el cliente.
+const SERVER_DATA_OVERRIDE = {
+  '/data/pokedex.js':   { file: path.join(SHOWDOWN_DIST, 'pokedex.js'),   varName: 'BattlePokedex',   key: 'Pokedex'   },
+  '/data/moves.js':     { file: path.join(SHOWDOWN_DIST, 'moves.js'),     varName: 'BattleMovedex',   key: 'Moves'     },
+  '/data/abilities.js': { file: path.join(SHOWDOWN_DIST, 'abilities.js'), varName: 'BattleAbilities', key: 'Abilities' },
+  '/data/items.js':     { file: path.join(SHOWDOWN_DIST, 'items.js'),     varName: 'BattleItems',     key: 'Items'     },
+  '/data/typechart.js': { file: path.join(SHOWDOWN_DIST, 'typechart.js'), varName: 'BattleTypeChart', key: 'TypeChart' },
+};
+
+// Sirve un archivo data/*.js del servidor convirtiéndolo a variable global del navegador.
+// dist/data/pokedex.js exporta { Pokedex: {...} } → el cliente espera window.BattlePokedex = {...}
+function serveDataFile(req, res, pathname, override) {
+  try {
+    delete require.cache[require.resolve(override.file)];
+    const mod = require(override.file);
+    const data = mod[override.key] || mod.exports?.[override.key] || mod;
+
+    // Generar JS que asigna la variable global que espera el cliente
+    const js = `window.${override.varName} = ${JSON.stringify(data)};`;
+
+    console.log('[SERVER DATA]', pathname, '->', override.varName, `(${Object.keys(data).length} entradas)`);
+
+    res.writeHead(200, {
+      'Content-Type': 'text/javascript; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'X-PS-Source': 'server-dist',
+    });
+    res.end(js);
+  } catch (e) {
+    console.error('[SERVER DATA] Error sirviendo', pathname, ':', e.message);
+    console.warn('[SERVER DATA] Fallback al archivo del cliente para', pathname);
+    // Si falla, dejar que lo sirva el cliente estático normal
+    tryServeFromRoots(req, res, pathname);
+  }
+}
+// ──────────────────────────────────────────────────────────────────────────────
+
 const ROOTS = [
   __dirname,
   path.join(__dirname, 'play.pokemonshowdown.com'),
@@ -143,7 +184,7 @@ function fetchSaveAndServe(res, url, destPath, label) {
 
 // Fallback de 3 niveles para sprites:
 // 1) sprites-custom/ local
-// 2) tu servidor (37.15.98.131:8001) → si lo encuentra, lo guarda en sprites-custom/
+// 2) tu servidor (37.15.97.46:8001) → si lo encuentra, lo guarda en sprites-custom/
 // 3) play.pokemonshowdown.com (oficial, no se guarda)
 function handleSprite(req, res, pathname) {
   // Ruta local donde se guardaría/buscaría el sprite custom
@@ -163,7 +204,7 @@ function handleSprite(req, res, pathname) {
   }
 
   // 2) Intentar desde tu servidor custom
-  const customServerUrl = `http://37.15.98.131:8001${relativePath}`;
+  const customServerUrl = `http://37.15.97.46:8001${relativePath}`;
 
   // Usamos un EventEmitter para encadenar los niveles
   res.once('sprite-not-found', () => {
@@ -217,17 +258,12 @@ function proxyToFallback(req, res, urlObj) {
 }
 
 // ─── ENDPOINT /api/pokedex ─────────────────────────────────────────────────────
-// Lee dist/data/pokedex.js del servidor Showdown y devuelve el objeto Pokedex
-// como JSON. El cliente lo fetchea al arrancar y mergea con su BattlePokédex local.
 function serveApiPokedex(req, res) {
   const pokedexPath = path.join(SHOWDOWN_DIST, 'pokedex.js');
 
   try {
-    // Limpiamos caché de require para siempre leer la versión más reciente
     delete require.cache[require.resolve(pokedexPath)];
     const mod = require(pokedexPath);
-
-    // El módulo exporta { Pokedex: {...} }
     const pokedex = mod.Pokedex || mod.exports?.Pokedex || mod;
 
     const json = JSON.stringify(pokedex);
@@ -241,16 +277,12 @@ function serveApiPokedex(req, res) {
     res.end(json);
   } catch (e) {
     console.error('[API] /api/pokedex ERROR:', e.message);
-    console.error('      Buscando en:', pokedexPath);
-    console.error('      Ajusta SHOWDOWN_DIST al inicio del archivo si la ruta es incorrecta.');
     res.writeHead(500, {'Content-Type': 'text/plain; charset=utf-8'});
     res.end('500 Error leyendo pokedex del servidor: ' + e.message);
   }
 }
 
-// ─── ENDPOINT /api/moves ───────────────────────────────────────────────────────
-// Lee dist/data/moves.js del servidor Showdown y devuelve el objeto Moves
-// como JSON. El cliente lo fetchea al arrancar y mergea con su BattleMoves local.
+// ─── ENDPOINT /api/moves ──────────────────────────────────────────────────────
 function serveApiMoves(req, res) {
   const movesPath = path.join(SHOWDOWN_DIST, 'moves.js');
 
@@ -270,12 +302,11 @@ function serveApiMoves(req, res) {
     res.end(json);
   } catch (e) {
     console.error('[API] /api/moves ERROR:', e.message);
-    console.error('      Buscando en:', movesPath);
     res.writeHead(500, {'Content-Type': 'text/plain; charset=utf-8'});
     res.end('500 Error leyendo moves del servidor: ' + e.message);
   }
 }
-// ──────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 
 http.createServer((req, res) => {
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
@@ -283,14 +314,17 @@ http.createServer((req, res) => {
 
   if (pathname === '/') pathname = '/index.html';
 
-  // ── API endpoints ──────────────────────────────────────────────────────────
-  if (pathname === '/api/pokedex') {
-    return serveApiPokedex(req, res);
+  // ── API endpoints ─────────────────────────────────────────────────────────
+  if (pathname === '/api/pokedex') return serveApiPokedex(req, res);
+  if (pathname === '/api/moves')   return serveApiMoves(req, res);
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── DATA OVERRIDE: servir data/*.js desde dist/ del servidor ─────────────
+  // Convierte módulos Node.js a variables globales que espera el navegador
+  if (SERVER_DATA_OVERRIDE[pathname]) {
+    return serveDataFile(req, res, pathname, SERVER_DATA_OVERRIDE[pathname]);
   }
-  if (pathname === '/api/moves') {
-    return serveApiMoves(req, res);
-  }
-  // ──────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
 
   // 1) intenta servir local
   const servedPath = tryServeFromRoots(req, res, pathname);
@@ -306,12 +340,13 @@ http.createServer((req, res) => {
     return proxyToFallback(req, res, urlObj);
   }
 
-  // 3) 404
+  // 404
   console.log('[404]', req.method, pathname);
   res.writeHead(404, {'Content-Type': 'text/plain; charset=utf-8'});
   res.end('404 Not Found');
-}).listen(PORT, () => {
+}).listen(PORT, '0.0.0.0', () => {
   console.log(`Client+fallback: http://localhost:${PORT}/testclient.html?~~localhost:8000`);
+  console.log(`Acceso externo:  http://37.15.97.46:${PORT}/testclient.html?~~37.15.97.46:8000`);
   console.log(`API Pokédex:     http://localhost:${PORT}/api/pokedex`);
   console.log(`API Moves:       http://localhost:${PORT}/api/moves`);
 });
