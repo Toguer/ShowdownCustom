@@ -3470,14 +3470,6 @@ export const Moves: import('../sim/dex-moves').MoveDataTable = {
 		priority: 0,
 		flags: { protect: 1, reflectable: 1, mirror: 1, metronome: 1, nosketch: 1 },
 		status: 'slp',
-		onTry(source, target, move) {
-			if (source.species.name === 'Darkrai' || move.hasBounced) {
-				return;
-			}
-			this.add('-fail', source, 'move: Dark Void');
-			this.hint("Only a Pokemon whose form is Darkrai can use this move.");
-			return null;
-		},
 		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Dark",
@@ -5234,6 +5226,9 @@ export const Moves: import('../sim/dex-moves').MoveDataTable = {
 			duration: 2,
 			onFieldStart(target) {
 				this.add('-fieldactivate', 'move: Fairy Lock');
+			},
+			onFieldRestart() {          // ← ÚNICO CAMBIO
+				this.field.pseudoWeather['fairylock'].duration = 2;
 			},
 			onTrapPokemon(pokemon) {
 				pokemon.tryTrap();
@@ -18860,7 +18855,7 @@ export const Moves: import('../sim/dex-moves').MoveDataTable = {
 		flags: { contact: 1, protect: 1, mirror: 1, metronome: 1 },
 		secondary: null,
 		target: "normal",
-		type: "Normal",
+		type: "Fighting",
 		contestType: "Tough",
 	},
 	strengthsap: {

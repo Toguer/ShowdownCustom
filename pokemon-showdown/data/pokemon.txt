@@ -27124,7 +27124,7 @@ Pokedex = Forma regional de Tangrowth.
 [RATICATEOPALO]
 Name = Raticate Opalo
 Types = NORMAL,DARK
-BaseStats = 65,100,60,110,50,70
+BaseStats = 65,100,60,110,70,50
 GenderRatio = Female50Percent
 GrowthRate = Medium
 BaseExp = 145
@@ -27239,8 +27239,7 @@ Color = Brown
 Generation = 9
 Pokedex = Forma regional de Cubone.
 #-------------------------------
-#-------------------------------
-[CUBONEOPALO]
+[SIRFETCHDOPALO]
 Name=Sirfetch'd Opalo
 InternalName=SIRFETCHDOPALO
 Type1=FIGHTING
@@ -27260,4 +27259,127 @@ Weight = 6.5
 Color = Brown
 Generation = 9
 Pokedex = Forma regional de Sirfetch'd.
+#-------------------------------
+[RABATUTA]
+Name=Rabatuta
+InternalName=RABATUTA
+Type1=FIRE
+BaseStats=70,60,75,65,75,75
+GenderRatio = FemaleOneEighth
+GrowthRate = Parabolic
+BaseExp = 265
+CatchRate = 45
+Happiness = 50
+Abilities = BLAZE
+HiddenAbilities = SOLARPOWER
+EggGroups = Undiscovered
+HatchSteps = 5120
+Height = 1.4
+Weight = 33.0
+Color = Red
+Generation = 9
+Pokedex = Este alegre Pokémon solidifica fragmentos de energía y los mueve a su alrededor como una batuta para luego lanzarlos en llamas hacia sus enemigos. 
+#-------------------------------
+[TIGNITUS]
+Name=Tignitus
+InternalName=Tignitus
+Type1=FIRE
+Type2=PSYCHIC
+BaseStats=75,70,110,80,95,110
+GenderRatio = FemaleOneEighth
+GrowthRate = Parabolic
+BaseExp = 62
+CatchRate = 45
+Happiness = 70
+Abilities = SUENYOETERNO
+HiddenAbilities = SOLARPOWER
+EggGroups = Undiscovered
+HatchSteps = 5120
+Height = 1.5
+Weight = 50.0
+Color = Red
+Generation = 9
+Pokedex = Atrae a sus presas con las melodías que toca en la punta de su cola. Las notas musicales que forma con energía psíquica hipnotizan a todo aquel que las escucha.
+#-------------------------------
+[NINFAE]
+Name=Ninfae
+InternalName=NINFAE
+Type1=GRASS
+BaseStats=65,70,60,80,70,75
+GenderRatio = Female50Percent
+GrowthRate = Parabolic
+BaseExp = 265
+CatchRate = 45
+Happiness = 70
+Abilities = OVERGROW
+HiddenAbilities = CHLOROPHYLL
+EggGroups = Undiscovered
+HatchSteps = 5120
+Height = 1.4
+Weight = 33.0
+Color = GREEN
+Generation = 9
+Pokedex = Es muy presumido, si haces algo que altere ligeramente su inmaculado aspecto se cabrea, infla sus mofletes y ataca.
+#-------------------------------
+[FAEUNA]
+Name=Faeuna
+InternalName=FAEUNA
+Type1=GRASS
+Type2=FAIRY
+BaseStats=70,100,80,110,95,85
+GenderRatio = FemaleOneEighth
+GrowthRate = Parabolic
+BaseExp = 64
+CatchRate = 45
+Happiness = 70
+Abilities = ELECTRUGIDO
+HiddenAbilities = CHLOROPHYLL
+EggGroups = Undiscovered
+HatchSteps = 5120
+Height = 1.5
+Weight = 40.0
+Color = GREEN
+Generation = 9
+Pokedex = Viajan a pequeños bosques y ayudan a crecer las plantas. Cuando el bosque ya es muy frondoso, parte en busca de otro para repetir el proceso.
+#-------------------------------
+[SAIGULL]
+Name=Saigull
+InternalName=SAIGULL
+Type1=WATER
+BaseStats=70,75,75,60,65,75
+GenderRatio = FemaleOneEighth
+GrowthRate = Parabolic
+BaseExp = 265
+CatchRate = 45
+Happiness = 50
+Abilities = TORRENT
+HiddenAbilities = DEFIANT
+EggGroups = Undiscovered
+HatchSteps = 5120
+Height = 1.4
+Weight = 33.0
+Color = WHITE
+Generation = 9
+Pokedex = Convierte piedras en balones de fuego dándoles toques y, luego, chuta con fuerza hacia el rival para chamuscarlo.
+#-------------------------------
+[SEAGHOUL]
+Name=Seaghoul
+InternalName=SEAGHOUL
+Type1=WATER
+TYPE2=DARK
+BaseStats=90,110,90,75,85,90
+GenderRatio = FemaleOneEighth
+GrowthRate = Parabolic
+BaseExp = 63
+CatchRate = 45
+Happiness = 70
+Abilities = MANCHANEGRA
+HiddenAbilities = MANCHANEGRA
+EggGroups = Undiscovered
+HatchSteps = 5120
+Height = 0.4
+Weight = 8.0
+Color = BLUE
+Generation = 9
+Pokedex = Se desbanda de su grupo tras evolucionar y parte en busca de objetos que consideren valiosos. Aprovechan las tormentas que ellos mismos crean para atacar.
 #-------------------------------
